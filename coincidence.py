@@ -1,3 +1,14 @@
+"""
+Code to coincidence candidates detected between 
+three antennas in a cluster. We will search 
+for temporal coincidences between the three 
+stations and time/DM coincidences between 
+all pairs of stations.
+
+16 February 2022
+Liam Connor 
+"""
+
 import os
 import sys
 
