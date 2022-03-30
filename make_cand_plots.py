@@ -132,7 +132,7 @@ def plotfour(dataft, datadmt, cand_heim,
 
     # not_real = False
 
-    plt.suptitle(suptitle, color='C1', fontweight='bold')
+    plt.suptitle(suptitle, color='C1', fontweight='bold', fontsize=20)
 #    plt.tight_layout()
     if figname_out is not None:
         try:
