@@ -18,7 +18,7 @@ while True:
     outdir = coincidence.main(1)
     print(outdir)
     dsr = outdir.split('/')[-1]
-    os.system('python /home/user/grex/make_cand_plots.py %s' % dsr)
+    os.system('python make_cand_plots.py %s' % dsr)
 
 #    fn_cand_plots = filter(os.path.isdir, glob.glob('/home/user/grex/2*'))
 #    fn_cand_plots = sorted(fn_cand_plots, key=os.path.getmtime)  
