@@ -72,7 +72,7 @@ def plotfour(dataft, datadmt, cand_heim,
     freqs = np.linspace(freqmin, freqmax, nfreq)
     tarr = np.linspace(tmin, tmax, ntime)
     tarr_HR = np.linspace(tmin, tmax, dataft_HR.shape[1])
-    fig = plt.figure(figsize=(8,10))
+    fig = plt.figure(figsize=(10,10))
 
     plt.subplot(221)
     extentft=[tmin,tmax,freqmin,freqmax]
