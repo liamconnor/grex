@@ -132,8 +132,8 @@ def plotfour(dataft, datadmt, cand_heim,
 
     # not_real = False
 
-    # plt.suptitle(suptitle, color='C1')
-    # plt.tight_layout()
+    plt.suptitle(suptitle, color='C1')
+    plt.tight_layout()
     if figname_out is not None:
         try:
             plt.savefig(figname_out)
@@ -227,6 +227,7 @@ def proc_candidate(fncand='/home/user/cand_times_sync/heimdall.cand',
             fnfil = cand_dir_2 + 'candidate_%d.fil' % cand_name_ii
             if not os.path.exists(fnfil):
                 try:
+                    # get candidates from Delta 
                     os.system('scp user@166.140.120.248:/home/user/candidates/candidate_%d.fil %s'%(cand_name_ii,cand_dir_2))
                 except:
                     print("Could not scp candidate_%d.fil" % cand_name_ii)
@@ -236,6 +237,7 @@ def proc_candidate(fncand='/home/user/cand_times_sync/heimdall.cand',
             fnfil = cand_dir_3 + 'candidate_%d.fil' % cand_name_ii
             if not os.path.exists(fnfil):
                 try:
+                    # get candidates from Goldstone 
                     os.system('scp user@158.154.14.10:/home/user/candidates/candidate_%d.fil %s'%(cand_name_ii,cand_dir_3))
                 except:
                     print("Could not scp candidate_%d.fil" % cand_name_ii)
@@ -248,8 +250,9 @@ def proc_candidate(fncand='/home/user/cand_times_sync/heimdall.cand',
         data, freq, dt, header = staretools.read_fil_data_stare(fnfil, 0, -1)
         nf, nt = data.shape 
 
-        pstr = (station_ii, cand_name_ii, dm_ii, ibox, mjd_ii)
-        print("     Station:%d cand:%d DM:%0.2f ibox:%d mjd:%0.7f" % pstr)
+        pstr = (staretools.station_id[station_ii], cand_name_ii, dm_ii, ibox, mjd_ii)
+        print("     Station:%s cand:%d DM:%0.2f ibox:%d mjd:%0.7f" % pstr)
+        suptitle = pstr
         if norm:
             data = data-np.median(data,axis=1,keepdims=True)
             data /= np.std(data)
@@ -277,7 +280,7 @@ def proc_candidate(fncand='/home/user/cand_times_sync/heimdall.cand',
             plotfour(data, datadm, cand_heim_ii,
                      figname_out=figname_out, dm=dm_ii,
                      dms=dms,
-                     suptitle='', heimsnr=-1, showplot=showplot,
+                     suptitle=suptitle, heimsnr=-1, showplot=showplot,
                      ibox=ibox, ibeam=-1, prob=-1,
                      multibeam_dm0ts=None,
                      time_sec_ii=cand_heim['time_sec'][ii])

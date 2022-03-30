@@ -10,6 +10,8 @@ from astropy import units as u
 sgr_1935_ra = 293.731999*u.deg
 dm_sgr1935 = 332.
 
+station_id = {1:'OVRO', 2:'Delta', 3:'Goldstone'}
+
 def get_RA_overhead(mjd=None,longitude_rad=-2.064427799136453):
     if mjd is None:
         t = Time.now()
