@@ -13,6 +13,8 @@ dm_sgr1935 = 332.
 station_id = {1:'OVRO', 2:'Delta', 3:'Goldstone'}
 
 def get_RA_overhead(mjd=None,longitude_rad=-2.064427799136453):
+    """ Calculate RA from MJD assuming OVRO longitude
+    """
     if mjd is None:
         t = Time.now()
     elif mjd > 40000:
@@ -26,10 +28,15 @@ def get_RA_overhead(mjd=None,longitude_rad=-2.064427799136453):
     return ra
 
 def get_RA_diff(mjd, src_RA):
+    """ Get difference in RA between source and hour angle
+    """
     ra = get_RA_overhead(mjd)
     return ra-src_RA
 
 def get_mjd_cand(fncand):
+    """ Open candidate metadata file fncand and 
+    create array of MJDs
+    """
     f = open(fncand,'r')
 
     mjd_arr = []
@@ -44,11 +51,16 @@ def get_mjd_cand(fncand):
     return np.array(mjd_arr)
 
 def get_mjd_cand_pd(data):
+    """ Get MJD array from pandas dataframe  
+    """
     mjd = data['mjd_day']+(data['mjd_hr']+data['mjd_min']/60.+data['mjd_sec']/3600.)/24.
 
     return mjd
 
 def read_heim_pandas(fncand, skiprows=0):
+    """ Read in Heimdall candidates txt file and create
+        pandas dataframe 
+    """
     if fncand.endswith('csv'):
         data = pd.read_csv(fncand)
         return data

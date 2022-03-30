@@ -132,8 +132,8 @@ def plotfour(dataft, datadmt, cand_heim,
 
     # not_real = False
 
-    plt.suptitle(suptitle, color='C1')
-    plt.tight_layout()
+    plt.suptitle(suptitle, color='C1', fontweight='bold')
+#    plt.tight_layout()
     if figname_out is not None:
         try:
             plt.savefig(figname_out)
@@ -172,6 +172,9 @@ def dm_transform(data, dm_max=20,
 def proc_candidate(fncand='/home/user/cand_times_sync/heimdall.cand', 
                    mkplot=True, ndm=32, dmtrans=True, target_DM=None, 
                    target_RA=None, showplot=False):
+    """ Preprocess filterbank files for all three stations in the cluster 
+        and plot them with plotfour
+    """
     if type(fncand)==str:
         cand_heim = staretools.read_heim_pandas(fncand, skiprows=0)
         mjd = staretools.get_mjd_cand_pd(cand_heim)
@@ -194,12 +197,12 @@ def proc_candidate(fncand='/home/user/cand_times_sync/heimdall.cand',
         ibox = int(2**(cand_heim['log2width'].iloc[ii]))
 
         if target_RA is not None and abs(ra_diff.deg)>90.:
-#            print("Skipping, SGR1935 not in beam")
+            print("Skipping, SGR1935 not in beam")
             continue
 
         if target_DM is not None:
             if np.abs(dm_ii-staretools.dm_sgr1935)>20.0:
-#                print("Skipping, DM is not close to 332 pc cm**-3")
+                print("Skipping, DM is not close to 332 pc cm**-3")
                 continue
 
         if type(fncand)==str:
