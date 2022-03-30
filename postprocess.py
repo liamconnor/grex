@@ -10,12 +10,13 @@ import coincidence
 
 to_slack = False
 to_email = True 
+mailer_list = ['liam.dean.connor@gmail.com', 'kshila@caltech.edu']
 
 if to_email:
     import mailer 
 
 while True:
-    outdir = coincidence.main(1)
+    outdir = coincidence.main(4)
     print(outdir)
     dsr = outdir.split('/')[-1]
     os.system('python make_cand_plots.py %s' % dsr)
@@ -42,7 +43,7 @@ while True:
 
     if to_email:
         mailer.send_email(send_from='grexalerts@gmail.com', 
-                          send_to=['liam.dean.connor@gmail.com'], 
+                          send_to=mailer_list, 
                 subject="GReX Candidates", text="%d candidates"%len(fn_cand_plots), files=fn_cand_plots, 
                server = "smtp.gmail.com", 
                port = 587, passwd='rqqddxnuiuozjnah')
