@@ -252,7 +252,7 @@ def proc_candidate(fncand='/home/user/cand_times_sync/heimdall.cand',
 
         pstr = (staretools.station_id[station_ii], cand_name_ii, dm_ii, ibox, mjd_ii)
         print("     Station:%s cand:%d DM:%0.2f ibox:%d mjd:%0.7f" % pstr)
-        suptitle = pstr
+        suptitle = "     Station:%s cand:%d DM:%0.2f\nibox:%d mjd:%0.7f" % pstr
         if norm:
             data = data-np.median(data,axis=1,keepdims=True)
             data /= np.std(data)
