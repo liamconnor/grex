@@ -10,7 +10,7 @@ import coincidence
 
 to_slack = False
 to_email = True 
-mailer_list = ['liam.dean.connor@gmail.com', 'kshila@caltech.edu']
+mailer_list = ['liam.dean.connor@gmail.com', 'me+grex@kiranshila.com']
 
 if to_email:
     import mailer 
