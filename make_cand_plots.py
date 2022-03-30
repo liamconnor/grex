@@ -109,7 +109,8 @@ def plotfour(dataft, datadmt, cand_heim,
             0.5*(max(datats)+np.median(datats)), 
             'Heimdall S/N : %0.1f\nHeimdall DM : %d\
             \nHeimdall ibox : %d\nibeam : %d' % (heimsnr,dm,ibox,ibeam), 
-            fontsize=8, verticalalignment='center')
+            fontsize=8, verticalalignment='center', 
+            backgroundcolor='white', alpha=1.0)
     
         
 #        plt.subplot(326)
