@@ -1,9 +1,11 @@
-# GReX RFI Tests
-# Make a class with all the things
+import sys
+
 import numpy as np 
 import pandas as pd
 
-class GReX_RFI:
+#import reader
+
+class RFI:
 
     def __init__(self, data, dumb_mask=[]):
         self.data = data
@@ -36,6 +38,17 @@ class GReX_RFI:
             bad_samp = np.where(data_rb[ii]>dmed_ii + sigma_thresh*sig_ii)[0]
             self.data[frebin*ii:frebin*(ii+1), bad_samp] = dmed_ii
 
+    def per_channel_sigmacut_mproc(self, data, frebin=1, sigma_thresh=3):
+        data_rb = data
+
+        for ii in range(data_rb.shape[0]):
+            sig_ii = np.std(data_rb[ii])
+            dmed_ii = np.median(data_rb[ii])
+            bad_samp = np.where(data_rb[ii]>dmed_ii + sigma_thresh*sig_ii)[0]
+            data_rb[frebin*ii:frebin*(ii+1), bad_samp] = dmed_ii
+
+        return data_rb
+
     def per_sample_sigmacut(self, sigma_thresh=3):
         pass 
 
@@ -55,11 +68,83 @@ class GReX_RFI:
         self.data[:, bad_samp] = data_replace.reshape(self.nfreq, 
                                                       len(bad_samp))
 
+    def variancecut(self, axis=0, sigma_thresh=3):
+        sig = np.std(self.data, axis=axis)
+        sigsig = np.std(sig)
+        meansig = np.mean(sig)
+        ind = np.where(sig > meansig + sigma_thresh*sigsig)[0]
+        if axis==0:
+            self.data[:, ind] = 0.0
+        elif axis==1:
+            self.data[ind] = 0.0
 
-def apply_rfi_filters(data):
-    G = GReX_RFI(data)
-    G.remove_bandpass_Tsys()
-    G.per_channel_sigmacut()
-    G.dm_zero_filter()
+    def detrend_data(self,axis=0,degree=4):
+        if axis==0:
+            xval = np.arange(self.nfreq)
+        elif axis==1:
+            xval = np.arange(self.ntime)
 
-    return G.data
+        p = np.polyfit(xval, np.mean(self.data,axis=axis), 4)
+        f = np.poly1d(p)
+        self.data -= f(xval)
+
+def apply_rfi_filters_grex(data, sigma_thresh_chan=3.0,
+                    sigma_thresh_dm0=7.):
+    """ Apply in sequence RFI filters and detrending 
+    to time frequency intensity data. 
+    """
+    R = RFI(data)
+    R.remove_bandpass_Tsys()
+    R.variancecut(axis=0, sigma_thresh=3)
+    R.variancecut(axis=1, sigma_thresh=6)
+    R.dm_zero_filter(sigma_thresh_dm0)
+    R.detrend_data(axis=0,degree=4)
+    R.detrend_data(axis=1,degree=4)
+    
+    return R.data 
+
+def apply_rfi_filters(data, sigma_thresh_chan=3.0,
+                    sigma_thresh_dm0=7., ncpu=20):
+    R = RFI(data)
+    R.remove_bandpass_Tsys()
+#    R.per_channel_sigmacut(1, sigma_thresh_chan)
+    R.dm_zero_filter(sigma_thresh_dm0)
+
+#    data_list = Parallel(n_jobs=20)(delayed(R.per_channel_sigmacut_mproc)(R.data[9*ii:9*(ii+1)],) for ii in range(ncpu))
+#    R.data = np.concatenate(data_list)
+
+    return R.data
+
+if __name__=='__main__':
+    fn_fil = sys.argv[1]
+    fn_out_fil = sys.argv[2]
+    chunksize = 2**14
+    
+    for ii in range(int(1e8)):
+        data_fil_obj, freq_arr, dt, header = reader.read_fil_data(fn_fil, 
+                                            start=ii*chunksize, stop=chunksize)
+        if data_fil_obj.data.shape[1]==0:
+            break
+
+        data = apply_rfi_filters(data_fil_obj.data)
+        if ii==0:
+            reader.write_to_fil(np.zeros([header['nchans'], 0]), header, fn_out_fil)
+
+        fil_obj = reader.filterbank.FilterbankFile(fn_out_fil, mode='readwrite')
+        fil_obj.append_spectra(data.transpose())
+
+    if data_fil_obj.data.shape[1]!=0:
+        print("Did not reach end of file, maybe crank up loop range")
+
+
+
+
+
+
+
+
+
+
+
+
+
